@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+//import 'dart:async';
+import 'dart:convert';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -9,7 +12,19 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  final String _preco = "0";
+  String _preco = "0";
+
+  void _recuperarPreco() async {
+    String url = "https://blockchain.info/ticker";
+    http.Response response = await http.get(Uri.parse(url));
+
+    Map<String, dynamic> retorno = json.decode(response.body);
+    
+    setState(() {
+      _preco = retorno ["BRL"]["buy"].toString();
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +33,7 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(32),
         child: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset("assets/images/bitcoin.png"),
               Padding(
@@ -30,7 +46,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               ElevatedButton(
-                onPressed: (){},
+                onPressed: _recuperarPreco,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
                   padding: const EdgeInsets.fromLTRB(30, 15, 30, 15)
